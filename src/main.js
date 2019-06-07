@@ -48,10 +48,17 @@ class HandController {
 
 class Game {
 	constructor(){
+
 		this.diffLevel = 1;
 		this.catchCount = 0;
 		this.strikesLeft = 4;
+
 		this.paddleControl = new HandController(300,300);
+
+		this.validShapeTypes = ['circle', 'rectangle'];
+		this.fsSize = '80'
+		this.fsArray = [];
+		this.fsCount = 0;
 	}
 
 	updateScore(){
@@ -63,8 +70,23 @@ class Game {
 	startGame(){
 
 	}
-	generateFallingShape(){
-
+	generateFallingShape(physics){
+		// Try and use the Ticker on physics in order to generate new random
+		// shapes at random times by flipping a coin TODO: Not sure if the
+		// ticker function must be here or not. First try to keep them isolated
+		this.fsCount ++;
+		var rnd = Math.floor(Math.random()*2);
+		var newShape = new FallingShape(this.validShapeTypes[rnd], this.fsSize, this.diffLevel, physics);
+		this.fsArray.push(newShape);
+		return newShape;
+	}
+	destroyFallenShapes(){
+		// Here we'll destroy all falling shapes that touch the ground
+	}
+	destroyCaughtShapes(){
+		// Here we'll destroy all falling shapes with crashFlag === true and are
+		// are still above the bar Y position. We must also increase the
+		// catchCount by 1
 	}
 }
 
@@ -117,14 +139,12 @@ class FallingShape {
 			var asset = new Circle(this.size / 2, '#e472c4')
 				.center();
 			asset.cursor = "pointer";
-			return asset;
-
 		} else {
 			var asset = new Rectangle(this.size, this.size, '#f58e25')
 				.centerReg();
 			asset.cursor = "pointer";
-			return asset;
 		}
+		return asset;
 
 	}
 	setStartPosition(){
@@ -220,10 +240,27 @@ frame.on("ready", function() {
 
 	paddleBody.x = 600;
 	paddleBody.y = 500;
+	// Must sinchronize position on the paddleControl, so keyboard control
+	// doesn't fail when first moved
+	paddleControl.updateCoordinates(600, 500, paddleBody);
 
 	// Falling shapes
-	var circle2 = new FallingShape('circle', fsSize, diffFactor, physics);
-	var rectangle2 = new FallingShape('rectangle', fsSize, diffFactor, physics);
+	// var circle2 = new FallingShape('circle', fsSize, diffFactor, physics);
+	var circle2 = game.generateFallingShape(physics);
+	var rectangle2 = game.generateFallingShape(physics);
+
+	// USING TICKER TO GENERATE FALLING SHAPES
+	var tickCount = 0;
+	physics.Ticker.add(()=>{
+		tickCount ++;
+		if(tickCount % 30 === 0) {
+			// Flip a coin
+			var coin = Math.floor(Math.random()*2);
+			if (coin === 1){
+				console.log('Mensaje desde Ticker');
+			}
+		  }
+	});
 	
 	// Set optional mouse dragging
 	// optionally pass in a list of bodies to receive mouse movement
