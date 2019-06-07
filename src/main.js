@@ -15,12 +15,12 @@ class HandController {
 		body.SetAwake(true);
 	}
 	updateCoordinates(x, y, body){
-		// this.x = x;
-		// this.y = y;
-		this.x = body.x = this.restrictMotion(body.x, x, 1);
-		this.y = body.y = this.restrictMotion(body.y, y, 1);
-		// body.x = this.x 
-		// body.y = this.y
+		this.x = x;
+		this.y = y;
+		// this.x = body.x = this.restrictMotion(body.x, x, 1);
+		// this.y = body.y = this.restrictMotion(body.y, y, 1);
+		body.x = this.x 
+		body.y = this.y
 		// Set body awaye as an attempt to prevernt tunneling. Didn't do much
 		body.SetAwake(true);
 	}
@@ -53,10 +53,11 @@ class FallingShape{
 }
 
 class Game {
-	constructor(diffLevel){
-		this.diffLevel = diffLevel;
+	constructor(){
+		this.diffLevel = 1;
 		this.catchCount = 0;
-
+		this.strikesLeft = 4;
+		this.paddleControl = new HandController(300,300);
 	}
 
 	updateScore(){
@@ -88,7 +89,8 @@ var width = 1200;
 var height = 800;
 var color = dark; // or any HTML color such as "violet" or "#333333"
 var outerColor = light;
-var paddleControl = new HandController(300,300);
+var game = new Game();
+var paddleControl = game.paddleControl;
 var debug2D = false;
 
 var frame = new Frame(scaling, width, height, color, outerColor);
@@ -115,7 +117,7 @@ frame.on("ready", function() {
 	physics.scale = 200;
 
 	// GAME DIFFICULTY factor TODO: Move to the game class eventually
-	var diffFactor = 1;
+	var diffFactor = game.diffLevel;
 
 	// Alternatively remove any of the borders
 	// also borderTop, borderLeft, borderRight
@@ -271,22 +273,22 @@ frame.on("ready", function() {
 
 	// Keyboard input
 	window.addEventListener('keydown', e => {
-		var inc = 1;
+		var inc = 5;
 		if(e.keyCode === 38) {
 			// Up Arrow
-			paddleControl.updateCoordinates(paddleBody.x, paddleBody.y - inc, paddleBody);
+			paddleControl.updateCoordinates(paddleControl.x, paddleControl.y - inc, paddleBody);
 		}
 		if(e.keyCode === 40) {
 			// Down Arrow
-			paddleControl.updateCoordinates(paddleBody.x, paddleBody.y + inc, paddleBody);
+			paddleControl.updateCoordinates(paddleControl.x, paddleControl.y + inc, paddleBody);
 		}
 		if(e.keyCode === 37) {
 			// Left Arrow
-			paddleControl.updateCoordinates(paddleBody.x - inc, paddleBody.y, paddleBody);
+			paddleControl.updateCoordinates(paddleControl.x - inc, paddleControl.y, paddleBody);
 		}
 		if(e.keyCode === 39) {
 			// Right Arrow
-			paddleControl.updateCoordinates(paddleBody.x + inc, paddleBody.y, paddleBody);
+			paddleControl.updateCoordinates(paddleControl.x + inc, paddleControl.y, paddleBody);
 		}
 	}); // end of keyboard input
 		
