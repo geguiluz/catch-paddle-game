@@ -46,14 +46,6 @@ class HandController {
 	}
 }
 
-class FallingShape{
-	constructor(){
-
-	}
-
-	
-}
-
 class Game {
 	constructor(){
 		this.diffLevel = 1;
@@ -71,25 +63,31 @@ class Game {
 	startGame(){
 
 	}
+	generateFallingShape(){
+
+	}
 }
 
-class FallingObject {
-	constructor(shapeType, size, diffFactor){
+class FallingShape {
+	constructor(shapeType, size, diffFactor, physics){
 		this.shapeType = shapeType;
+		this.size = size;
+		this.physics = physics;
 		this.friction = .7 / diffFactor;
 		this.restitution = .6 * diffFactor;
 		this.body = this.createBody(shapeType);
 		this.setStartPosition();
-		this.asset = createZimAsset(shapeType);
+		this.asset = this.createZimAsset(shapeType);
 
 		// Crash/catch-related variables
 		this.crashFlag = false;
 		this.secondsOnPaddle = 0;
 	}
 	createBody(shapeType){
+		// Box2D body assets specifying dynamic and other properties
 		if (shapeType === 'circle'){
-			return body = physics.makeCircle({
-				radius: size/2,
+			var body = this.physics.makeCircle({
+				radius: this.size / 2,
 				angular: .75,
 				restitution: this.restitution,
 				density: 1,
@@ -99,9 +97,9 @@ class FallingObject {
 			});
 		} else {
 			// Create a rectangle instead
-			return body = physics.makeRectangle({
-				width: size,
-				height: size, 
+			var body = this.physics.makeRectangle({
+				width: this.size,
+				height: this.size, 
 				restitution: this.restitution,
 				density: 1,
 				dynamic: true,
@@ -109,16 +107,20 @@ class FallingObject {
 				bullet: true
 			});
 		}
+		return body;
 	}
 	createZimAsset(shapeType){
+		// Create ZIM assets to match physics world
+		// Box2D bodies (made by physics.js) have centered positions
+		// so center the registration points for ZIM assets
 		if (shapeType === 'circle'){
-			var asset = new Circle(size / 2, frame.pink)
+			var asset = new Circle(this.size / 2, '#e472c4')
 				.center();
 			asset.cursor = "pointer";
 			return asset;
 
 		} else {
-			var asset = new Rectangle(size, size, frame.orange)
+			var asset = new Rectangle(this.size, this.size, '#f58e25')
 				.centerReg();
 			asset.cursor = "pointer";
 			return asset;
@@ -126,9 +128,10 @@ class FallingObject {
 
 	}
 	setStartPosition(){
-		// TODO: The value of X should be a random smaller than the width of the
-		// canvas
-		this.body.x = 400;
+		// The value of X should be a random between the start and the end
+		// of the paddleController width
+		this.body.x = 300 + Math.floor(Math.random() * 600);
+		console.log(this.body.x);
 		this.body.y = -100;
 	}
 }
@@ -143,14 +146,20 @@ class FallingObject {
 var scaling = "fit"; // this will resize to fit inside the screen dimensions
 var width = 1200;
 var height = 800;
-var color = dark; // or any HTML color such as "violet" or "#333333"
+
+// This is the color of the canvas inside and surroundings
+// can be any HTML color such as "violet" or "#333333"
+var color = dark; 
 var outerColor = light;
 
+// GAME initialization
 var game = new Game();
 var paddleControl = game.paddleControl;
-var debug2D = false;
+var diffFactor = game.diffLevel;
 
+// Create frame that will be used for both Leap Motion and Zim
 var frame = new Frame(scaling, width, height, color, outerColor);
+var debug2D = false;
 frame.on("ready", function() {
 	zog("ready from ZIM Frame");
 
@@ -162,6 +171,7 @@ frame.on("ready", function() {
 
 	// Make a new Physics object passing in the ZIM frame and borders
 	// it needs a frame so it can get scale to match the debug canvas
+	// We're creating the ground 120px above frame bottom border
 	var borders = {x:0, y:0, width:stageW, height:stageH-120};
 
 	var physics = new zim.Physics(frame, borders);
@@ -174,8 +184,7 @@ frame.on("ready", function() {
 
 	physics.scale = 200;
 
-	// GAME DIFFICULTY factor TODO: Move to the game class eventually
-	var diffFactor = game.diffLevel;
+	// GAME DIFFICULTY factor
 
 	// Alternatively remove any of the borders
 	// also borderTop, borderLeft, borderRight
@@ -184,18 +193,19 @@ frame.on("ready", function() {
 	// INITIAL VARS
 	// here we specify width, height, radius
 	// so we can use both for Box2D shapes and ZIM shapes
-	// TODO: Turn this into classes, so we can make shapes fall from above
 
 	var barW = 600;
 	var barH = 70;
-	var circleR = 40;
-	var boxW = 80;
-	var boxH = 80;
+	var fsSize = 80;
 
-	// Triangles do not behave good with the paddle bar
-	// var tri1 = 80;
-	// var tri2 = 80;
-	// var tri3 = 80;
+	// DEBUG
+	// optionally see the BOX 2D debug canvas 
+	if (debug2D === true){
+		physics.debug();
+		frame.on("resize", function() {
+			physics.updateDebug();
+		});
+	}
 
 	// PADDLE BODY
 	// Box2D body assets specifying dynamic and other properties
@@ -208,87 +218,36 @@ frame.on("ready", function() {
 		bullet: true
 	});
 
-	// Position paddle (only at start)
-	paddleBody.x = 300;
-	paddleBody.y = 300;
+	paddleBody.x = 600;
+	paddleBody.y = 500;
 
 	// Falling shapes
-	// CIRCLE
-	// Box2D body assets specifying dynamic and other properties
-
-	var circleBody = physics.makeCircle({
-		radius: circleR,
-		angular: .75,
-		restitution: .6 * diffFactor,
-		density: 1,
-		dynamic: true,
-		friction: .7 / diffFactor,
-		bullet: true
-	});
-
-	// Initial position
-	circleBody.x = 400;
-	circleBody.y = 40;
-
-	// BOX
+	var circle2 = new FallingShape('circle', fsSize, diffFactor, physics);
+	var rectangle2 = new FallingShape('rectangle', fsSize, diffFactor, physics);
 	
-	var boxBody = physics.makeRectangle({
-		width: boxW,
-		height: boxH, 
-		restitution: .6 * diffFactor,
-		density: 1,
-		dynamic: true,
-		friction: .7 / diffFactor,
-		bullet: true
-	});
-
-	// Initial position
-	boxBody.x = 200;
-	boxBody.y = 40;
-
-
 	// Set optional mouse dragging
 	// optionally pass in a list of bodies to receive mouse movement
 	// otherwise defaults to all moveable bodies
 	// physics.drag([boxBody, triangleBody]); // would not drag circleBody
 	physics.drag();
 
-	// DEBUG
-	// optionally see the BOX 2D debug canvas 
-	if (debug2D === true){
-		physics.debug();
-		frame.on("resize", function() {
-			physics.updateDebug();
-		});
-	}
-
-	// Create ZIM assets to match physics world
-	// Box2D bodies (made by physics.js) have centered positions
-	// so center the registration points for ZIM assets
 	var bar = new Rectangle(barW, barH, frame.silver);
     bar.centerReg();
     bar.cursor = "pointer";
 
-	var circle = new Circle(circleR, frame.pink)
-		.center();
-	circle.cursor = "pointer";
-
-	var box = new Rectangle(boxW, boxH, frame.orange)
-		.centerReg();
-	box.cursor = "pointer";
-
+	// Falling shape Mapping
+	physics.addMap(circle2.body, circle2.asset);
+	physics.addMap(rectangle2.body, rectangle2.asset);
+	
 	// MAPPING
 	// Map the ZIM assets to the Box2D assets
 	// this puts the ZIM assets on the Box2D assets
 	// and rotates them to the same rotation
 	physics.addMap(paddleBody, bar);
-	physics.addMap(circleBody, circle);
-	physics.addMap(boxBody, box);
 
 	// you can also remove maps and shapes:
 	// physics.removeMap(circleBody);
 	// physics.remove(circleBody);
-	// stage.removeChild(circle);
 
 	// EXTRA
 	// you can also access the update function and add your own calls
@@ -316,12 +275,12 @@ frame.on("ready", function() {
 			var pinkyFingerY = frame.hands[0].fingers[4].dipPosition[1];
 			
 			// Convert coordinates to 
-			var paddleX = indexFingerX * motionScaleRate + width / 2;
-			var paddleY = (height * 1.2 - indexFingerY * motionScaleRate);
+			var handX = indexFingerX * motionScaleRate + width / 2;
+			var handY = (height * 1.2 - indexFingerY * motionScaleRate);
 
 			// Use specific methods on the HandController object to update positions read from the leap motion device
 			paddleControl.updateRollAngle(indexFingerX,indexFingerY, pinkyFingerX, pinkyFingerY, paddleBody);
-			paddleControl.updateCoordinates(paddleX, paddleY, paddleBody);
+			paddleControl.updateCoordinates(handX, handY, paddleBody);
 			
 			// console.log('X:', paddleBody.x, 'Y:', paddleBody.y);
 			// console.log('X:', paddleControl.x, 'Y:', paddleControl.y);	
@@ -356,9 +315,6 @@ frame.on("ready", function() {
 
 	}
 
-	// 21. add a contact listener to remove body from b2BuoyancyController if a
-	//     body is leaving contact with our sensor then remove the body from the
-	//     paddleBody
 	contactListener.EndContact = function(e) {
 		// console.log('Contact Ended');
 
