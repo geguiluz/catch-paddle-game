@@ -250,14 +250,20 @@ frame.on("ready", function() {
 	var rectangle2 = game.generateFallingShape(physics);
 
 	// USING TICKER TO GENERATE FALLING SHAPES
+	// physics.Ticker.add(function);
+	// physics.Ticker.remove(function);
 	var tickCount = 0;
 	physics.Ticker.add(()=>{
 		tickCount ++;
-		if(tickCount % 30 === 0) {
-			// Flip a coin
+		if(tickCount % (30 / game.diffLevel) === 0) {
+			// Flip a coin to see if we drop a shape or not
 			var coin = Math.floor(Math.random()*2);
-			if (coin === 1){
+			if (coin === 1 && game.fsCount < 10){
+				// Coin has spoken! Let's generate a random shape and let it
+				// fall
 				console.log('Mensaje desde Ticker');
+				game.generateFallingShape(physics);
+				physics.addMap(game.fsArray[game.fsCount - 1].body, game.fsArray[game.fsCount - 1].asset);
 			}
 		  }
 	});
