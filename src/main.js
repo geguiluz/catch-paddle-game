@@ -1,3 +1,5 @@
+// Custom classes for game-related objects
+
 class HandController {
 	constructor(x, y){
 		this.x = x;
@@ -11,7 +13,7 @@ class HandController {
 		// Converting tetha from radians to degrees
 		var newAngle = theta * 180 / Math.PI;
 		this.rollAngle = body.rotation = this.restrictMotion(body.rotation, newAngle, 1);
-		// Set body awaye as an attempt to prevernt tunneling. Didn't do much
+		// Set body awake as an attempt to prevernt tunneling. Didn't do much
 		body.SetAwake(true);
 	}
 	updateCoordinates(x, y, body){
@@ -21,7 +23,7 @@ class HandController {
 		// this.y = body.y = this.restrictMotion(body.y, y, 1);
 		body.x = this.x 
 		body.y = this.y
-		// Set body awaye as an attempt to prevernt tunneling. Didn't do much
+		// Set body awake as an attempt to prevernt tunneling. Didn't do much
 		body.SetAwake(true);
 	}
 
@@ -72,8 +74,62 @@ class Game {
 }
 
 class FallingObject {
-	constructor(){
-		this.type = objType;
+	constructor(shapeType, size, diffFactor){
+		this.shapeType = shapeType;
+		this.friction = .7 / diffFactor;
+		this.restitution = .6 * diffFactor;
+		this.body = this.createBody(shapeType);
+		this.setStartPosition();
+		this.asset = createZimAsset(shapeType);
+
+		// Crash/catch-related variables
+		this.crashFlag = false;
+		this.secondsOnPaddle = 0;
+	}
+	createBody(shapeType){
+		if (shapeType === 'circle'){
+			return body = physics.makeCircle({
+				radius: size/2,
+				angular: .75,
+				restitution: this.restitution,
+				density: 1,
+				dynamic: true,
+				friction: this.friction,
+				bullet: true
+			});
+		} else {
+			// Create a rectangle instead
+			return body = physics.makeRectangle({
+				width: size,
+				height: size, 
+				restitution: this.restitution,
+				density: 1,
+				dynamic: true,
+				friction: this.friction,
+				bullet: true
+			});
+		}
+	}
+	createZimAsset(shapeType){
+		if (shapeType === 'circle'){
+			var asset = new Circle(size / 2, frame.pink)
+				.center();
+			asset.cursor = "pointer";
+			return asset;
+
+		} else {
+			var asset = new Rectangle(size, size, frame.orange)
+				.centerReg();
+			asset.cursor = "pointer";
+			return asset;
+		}
+
+	}
+	setStartPosition(){
+		// TODO: The value of X should be a random smaller than the width of the
+		// canvas
+		this.body.x = 400;
+		this.body.y = -100;
 	}
 }
 
@@ -89,6 +145,7 @@ var width = 1200;
 var height = 800;
 var color = dark; // or any HTML color such as "violet" or "#333333"
 var outerColor = light;
+
 var game = new Game();
 var paddleControl = game.paddleControl;
 var debug2D = false;
@@ -112,8 +169,9 @@ frame.on("ready", function() {
 	// EXTRA
 	// for custom Box2D you may want access to the b2World
 	// and scale that is used
-	// var world = physics.world;
+	var world = physics.world;
 	// var scale = physics.scale;
+
 	physics.scale = 200;
 
 	// GAME DIFFICULTY factor TODO: Move to the game class eventually
@@ -266,8 +324,7 @@ frame.on("ready", function() {
 			paddleControl.updateCoordinates(paddleX, paddleY, paddleBody);
 			
 			// console.log('X:', paddleBody.x, 'Y:', paddleBody.y);
-			// console.log('X:', paddleControl.x, 'Y:', paddleControl.y);
-			
+			// console.log('X:', paddleControl.x, 'Y:', paddleControl.y);	
 		}
 	}); // end of Leap loop
 
@@ -291,5 +348,23 @@ frame.on("ready", function() {
 			paddleControl.updateCoordinates(paddleControl.x + inc, paddleControl.y, paddleBody);
 		}
 	}); // end of keyboard input
+
+	// CONTACT LISTENERS
+	var contactListener = new b2ContactListener();
+	contactListener.BeginContact = function(e) {
+		// console.log('Contact Started');
+
+	}
+
+	// 21. add a contact listener to remove body from b2BuoyancyController if a
+	//     body is leaving contact with our sensor then remove the body from the
+	//     paddleBody
+	contactListener.EndContact = function(e) {
+		// console.log('Contact Ended');
+
+	}
+	// set the contact listener on the world
+	world.SetContactListener(contactListener);
+
 		
 }); // end of ready
