@@ -84,23 +84,35 @@ class Game {
 		// bodies directly there in order to destroy all falling shapes that touch
 		// the ground
 
-		// This function is also called from game.checkCaughtShapes after 3 seconds
+		// This function is also called from game.checkCaughtShapes after N seconds
 		// on the paddle
 
-		physics.removeMap(fsToDestroy);
-		physics.remove(fsToDestroy);
+		// Instead of using just the physics removal methods, query the
+		// fsArray
+		game.fsArray.map((item, index) => {
+			if (item.body === fsToDestroy){
+				// Destroy the Box2D bodies and mappings. Just removing them
+				// from the array doesn't kill them in the game world
+				physics.removeMap(item.body);
+				physics.remove(item.body);
+				// TODO: Also remove the ZIM Asset
+				// Remove the current item from the array
+				game.fsArray.splice(index, 1);
+				game.fsCount --;
+				if (event === 'touched-ground') {
+					// If event === 'touched-ground', also decrease game.strikesLeft
+					game.strikesLeft --;
+					console.log('Strikes left =', game.strikesLeft);
+				}
+				if (event === 'good-catch') {
+					// If event === 'good-catch', the game.catchCount by 1 (this is the
+					// game score)
+					game.catchCount ++;
+					console.log('Catch Count =', game.catchCount);
+				}
+			}
+		});
 		
-		if (event === 'touched-ground') {
-			// If event === 'touched-ground', also decrease game.strikesLeft
-			game.strikesLeft --;
-			console.log('Strikes left =', game.strikesLeft);
-		}
-		if (event === 'good-catch') {
-			// If event === 'good-catch', the game.catchCount by 1 (this is the
-			// game score)
-			game.catchCount ++;
-			console.log('Catch Count =', game.catchCount);
-		}
 
 	}
 	checkCaughtShapes(physics){
@@ -117,9 +129,6 @@ class Game {
 					// Check if secondsOnPaddle >= 3. If so, we need to destroy the ball
 					// even if it's fallen off the bar. The destroy function will update
 					// the game score 
-					// TODO: We also need to get rid of the object in the array, otherwise
-					// the catch count increases every time the function gets called by
-					// ticker
 					this.destroyShape(physics, item.body, 'good-catch');
 				}
 			}
@@ -304,7 +313,7 @@ frame.on("ready", function() {
 			if(tickCount % (30 / game.diffLevel) === 0) {
 				// Flip a coin to see if we drop a shape or not
 				var coin = Math.floor(Math.random()*2);
-				if (coin === 1 && game.fsCount){
+				if (coin === 1){
 					// Coin has spoken! Let's generate a random shape and let it
 					// fall
 					// console.log('Message from Ticker');
@@ -429,7 +438,8 @@ frame.on("ready", function() {
 			fsCrashed = e.m_fixtureA.GetBody();
 		}
 
-		// Query game.fsArray for the shape that has just touched ground
+		// TODO: Query game.fsArray inside a function in game instead 
+		// Query game.fsArray for the shape that has just touched the paddleBody
 		// (fsCrashed) and set crashFlag = true
 		game.fsArray.map((item) => {
 			if (fsCrashed === item.body){
@@ -452,8 +462,6 @@ frame.on("ready", function() {
 		}
 		// TODO: Only remove shapes if their Y is close to the ground (this will
 		// help us ensuring shapes only get distructed when they hit the ground)
-		// TODO: removeMap is leaving the asset on the canvas. We need to
-		// destroy the asset too
 
 
 	}
