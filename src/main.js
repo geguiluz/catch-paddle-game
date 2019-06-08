@@ -117,6 +117,9 @@ class Game {
 					// Check if secondsOnPaddle >= 3. If so, we need to destroy the ball
 					// even if it's fallen off the bar. The destroy function will update
 					// the game score 
+					// TODO: We also need to get rid of the object in the array, otherwise
+					// the catch count increases every time the function gets called by
+					// ticker
 					this.destroyShape(physics, item.body, 'good-catch');
 				}
 			}
@@ -295,21 +298,18 @@ frame.on("ready", function() {
 	var tickCount = 0;
 	physics.Ticker.add(() => {
 		tickCount ++;
-		// TODO: Count the number of strikes left. If they equal zero, call game
-		// over function
 		if(game.strikesLeft > 0){
+			// Count the number of strikes left. If they equal zero, call game
+			// over function
 			if(tickCount % (30 / game.diffLevel) === 0) {
 				// Flip a coin to see if we drop a shape or not
 				var coin = Math.floor(Math.random()*2);
-				if (coin === 1){
-					// if (game.fsCount < 10){
-						// Coin has spoken! Let's generate a random shape and let it
-						// fall
-						// console.log('Message from Ticker');
-						game.generateFallingShape(physics);
-						physics.addMap(game.fsArray[game.fsCount - 1].body, game.fsArray[game.fsCount - 1].asset);
-						
-						// }
+				if (coin === 1 && game.fsCount){
+					// Coin has spoken! Let's generate a random shape and let it
+					// fall
+					// console.log('Message from Ticker');
+					game.generateFallingShape(physics);
+					physics.addMap(game.fsArray[game.fsCount - 1].body, game.fsArray[game.fsCount - 1].asset);
 					}
 				}
 		} else {
