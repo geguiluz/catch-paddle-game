@@ -49,7 +49,7 @@ class HandController {
 class Game {
 	constructor(){
 
-		this.diffLevel = 1;
+		this.diffLevel = 1.5;
 		this.catchCount = 0;
 		this.strikesLeft = 4;
 
@@ -64,29 +64,56 @@ class Game {
 	updateScore(){
 
 	}
-	gameOver(){
-
+	gameOver(physics){
+		physics.dispose();
 	}
 	startGame(){
 
 	}
 	generateFallingShape(physics){
 		// Try and use the Ticker on physics in order to generate new random
-		// shapes at random times by flipping a coin TODO: Not sure if the
-		// ticker function must be here or not. First try to keep them isolated
+		// shapes at random times by flipping a coin
 		this.fsCount ++;
 		var rnd = Math.floor(Math.random()*2);
 		var newShape = new FallingShape(this.validShapeTypes[rnd], this.fsSize, this.diffLevel, physics);
 		this.fsArray.push(newShape);
 		return newShape;
 	}
-	destroyFallenShapes(){
-		// Here we'll destroy all falling shapes that touch the ground
+	destroyShape(physics, fsToDestroy, event){
+		// This function is called from contact listener instead of destroying
+		// bodies directly there in order to destroy all falling shapes that touch
+		// the ground
+
+		// This function is also called from game.checkCaughtShapes after 3 seconds
+		// on the paddle
+
+		physics.removeMap(fsToDestroy);
+		physics.remove(fsToDestroy);
+		
+		// TODO: If event === 'touched-ground', also decrease game.strikesLeft
+		// TODO: If event === 'good-catch', also decrease game.strikesLeft increase
+		// the game.catchCount by 1 (this is the game score)
+
 	}
-	destroyCaughtShapes(){
-		// Here we'll destroy all falling shapes with crashFlag === true and are
-		// are still above the bar Y position. We must also increase the
-		// catchCount by 1
+	checkCaughtShapes(physics){
+		// TODO: This function is called from the Ticker to continually check for
+		// good catches
+
+		game.fsArray.map((item) => {
+			if (item.crashFlag === true){
+				// Look for all bodies in game.fsArray with crashFlag === true and
+				// increase secondsOnPaddle by one every second (timing controlled by Ticker
+				// call)
+				item.secondsOnPaddle ++;
+				if (secondsOnPaddle >= 3){
+					// Check if secondsOnPaddle >= 3. If so, we need to destroy the ball
+					// even if it's fallen off the bar. The destroy function will update
+					// the game score 
+					this.destroyShape(physics, fsToDestroy, 'good-catch');
+				}
+			}
+		});
+
 	}
 }
 
@@ -152,7 +179,7 @@ class FallingShape {
 		// of the paddleController width
 		this.body.x = 300 + Math.floor(Math.random() * 600);
 		console.log(this.body.x);
-		this.body.y = -100;
+		this.body.y = 80;
 	}
 }
 
@@ -179,7 +206,7 @@ var diffFactor = game.diffLevel;
 
 // Create frame that will be used for both Leap Motion and Zim
 var frame = new Frame(scaling, width, height, color, outerColor);
-var debug2D = false;
+var debug2D = true;
 frame.on("ready", function() {
 	zog("ready from ZIM Frame");
 
@@ -216,7 +243,7 @@ frame.on("ready", function() {
 
 	var barW = 600;
 	var barH = 70;
-	var fsSize = 80;
+	// var fsSize = 80;
 
 	// DEBUG
 	// optionally see the BOX 2D debug canvas 
@@ -240,10 +267,15 @@ frame.on("ready", function() {
 
 	paddleBody.x = 600;
 	paddleBody.y = 500;
+	
+	var bar = new Rectangle(barW, barH, frame.silver);
+    bar.centerReg();
+    bar.cursor = "pointer";
+	
 	// Must sinchronize position on the paddleControl, so keyboard control
 	// doesn't fail when first moved
 	paddleControl.updateCoordinates(600, 500, paddleBody);
-
+	
 	// Falling shapes
 	// var circle2 = new FallingShape('circle', fsSize, diffFactor, physics);
 	var circle2 = game.generateFallingShape(physics);
@@ -255,15 +287,20 @@ frame.on("ready", function() {
 	var tickCount = 0;
 	physics.Ticker.add(()=>{
 		tickCount ++;
+		// TODO: Count the number of strikes left. If they equal zero, call game
+		// over function
 		if(tickCount % (30 / game.diffLevel) === 0) {
 			// Flip a coin to see if we drop a shape or not
 			var coin = Math.floor(Math.random()*2);
-			if (coin === 1 && game.fsCount < 10){
-				// Coin has spoken! Let's generate a random shape and let it
-				// fall
-				console.log('Mensaje desde Ticker');
-				game.generateFallingShape(physics);
-				physics.addMap(game.fsArray[game.fsCount - 1].body, game.fsArray[game.fsCount - 1].asset);
+			if (coin === 1){
+				// if (game.fsCount < 10){
+					// Coin has spoken! Let's generate a random shape and let it
+					// fall
+					// console.log('Mensaje desde Ticker');
+					game.generateFallingShape(physics);
+					physics.addMap(game.fsArray[game.fsCount - 1].body, game.fsArray[game.fsCount - 1].asset);
+
+				// }
 			}
 		  }
 	});
@@ -274,9 +311,7 @@ frame.on("ready", function() {
 	// physics.drag([boxBody, triangleBody]); // would not drag circleBody
 	physics.drag();
 
-	var bar = new Rectangle(barW, barH, frame.silver);
-    bar.centerReg();
-    bar.cursor = "pointer";
+
 
 	// Falling shape Mapping
 	physics.addMap(circle2.body, circle2.asset);
@@ -319,9 +354,10 @@ frame.on("ready", function() {
 			
 			// Convert coordinates to 
 			var handX = indexFingerX * motionScaleRate + width / 2;
-			var handY = (height * 1.2 - indexFingerY * motionScaleRate);
+			var handY = (height * 1.1 - indexFingerY * motionScaleRate);
 
-			// Use specific methods on the HandController object to update positions read from the leap motion device
+			// Use specific methods on the HandController object to update
+			// positions read from the leap motion device
 			paddleControl.updateRollAngle(indexFingerX,indexFingerY, pinkyFingerX, pinkyFingerY, paddleBody);
 			paddleControl.updateCoordinates(handX, handY, paddleBody);
 			
@@ -353,15 +389,57 @@ frame.on("ready", function() {
 
 	// CONTACT LISTENERS
 	var contactListener = new b2ContactListener();
-	contactListener.BeginContact = function(e) {
-		// console.log('Contact Started');
+
+	// It does not seem to make a difference wether if we use BeginContact or
+	// EndContact for shape deletion
+	contactListener.EndContact = function(e) {
+		// console.log('Contact Started with',e.m_fixtureA.m_body);
+		// console.log(e.m_fixtureA, e.m_fixtureB); 
+
+		// Check if paddle was hit, then determine if crash event stored the
+		// paddle in either fixtureA or fixtureB (it's not always consistent)
+		var fsCrashed = '';
+		if(e.m_fixtureA.m_body === paddleBody){
+			console.log('paddleBody Hit');
+			fsCrashed = e.m_fixtureB.GetBody();
+		} else if(e.m_fixtureB.m_body === paddleBody) {
+			console.log('paddleBody Hit');
+			fsCrashed = e.m_fixtureA.GetBody();
+		}
+
+		// Query game.fsArray for the shape that has just touched ground
+		// (fsCrashed) and set crashFlag = true
+		game.fsArray.map((item) => {
+			if (fsCrashed === item.body){
+				item.crashFlag = true;
+			}
+		});
+
+		// Check if paddle was hit, then determine if crash event stored the
+		// paddle in either fixtureA or fixtureB (it's not always consistent)
+
+		var fsDropped = '';
+		if(e.m_fixtureA.m_body.height > 300){
+			console.log('stage Hit');
+			fsDropped = e.m_fixtureB.GetBody();
+		} else if(e.m_fixtureB.m_body.height > 300) {
+			console.log('stage Hit');
+			fsDropped = e.m_fixtureA.GetBody();
+		}
+		// TODO: Only remove shapes if their Y is close to the ground (this will
+		// help us ensuring shapes only get distructed when they hit the ground)
+		// TODO: removeMap is leaving the asset on the canvas. We need to
+		// destroy the asset too
+
+		game.destroyShape(physics, fsDropped, 'touched-ground');
 
 	}
 
-	contactListener.EndContact = function(e) {
+	// contactListener.EndContact = function(e) {
 		// console.log('Contact Ended');
 
-	}
+	// }
+
 	// set the contact listener on the world
 	world.SetContactListener(contactListener);
 
