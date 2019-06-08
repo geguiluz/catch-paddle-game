@@ -90,13 +90,21 @@ class Game {
 		physics.removeMap(fsToDestroy);
 		physics.remove(fsToDestroy);
 		
-		// TODO: If event === 'touched-ground', also decrease game.strikesLeft
-		// TODO: If event === 'good-catch', also decrease game.strikesLeft increase
-		// the game.catchCount by 1 (this is the game score)
+		if (event === 'touched-ground') {
+			// If event === 'touched-ground', also decrease game.strikesLeft
+			game.strikesLeft --;
+			console.log('Strikes left =', game.strikesLeft);
+		}
+		if (event === 'good-catch') {
+			// If event === 'good-catch', the game.catchCount by 1 (this is the
+			// game score)
+			game.catchCount ++;
+			console.log('Catch Count =', game.catchCount);
+		}
 
 	}
 	checkCaughtShapes(physics){
-		// TODO: This function is called from the Ticker to continually check for
+		// This function is called from the Ticker to continually check for
 		// good catches
 
 		game.fsArray.map((item) => {
@@ -105,11 +113,11 @@ class Game {
 				// increase secondsOnPaddle by one every second (timing controlled by Ticker
 				// call)
 				item.secondsOnPaddle ++;
-				if (secondsOnPaddle >= 3){
+				if (item.secondsOnPaddle >= 3){
 					// Check if secondsOnPaddle >= 3. If so, we need to destroy the ball
 					// even if it's fallen off the bar. The destroy function will update
 					// the game score 
-					this.destroyShape(physics, fsToDestroy, 'good-catch');
+					this.destroyShape(physics, item.body, 'good-catch');
 				}
 			}
 		});
@@ -285,25 +293,39 @@ frame.on("ready", function() {
 	// physics.Ticker.add(function);
 	// physics.Ticker.remove(function);
 	var tickCount = 0;
-	physics.Ticker.add(()=>{
+	physics.Ticker.add(() => {
 		tickCount ++;
 		// TODO: Count the number of strikes left. If they equal zero, call game
 		// over function
-		if(tickCount % (30 / game.diffLevel) === 0) {
-			// Flip a coin to see if we drop a shape or not
-			var coin = Math.floor(Math.random()*2);
-			if (coin === 1){
-				// if (game.fsCount < 10){
-					// Coin has spoken! Let's generate a random shape and let it
-					// fall
-					// console.log('Mensaje desde Ticker');
-					game.generateFallingShape(physics);
-					physics.addMap(game.fsArray[game.fsCount - 1].body, game.fsArray[game.fsCount - 1].asset);
+		if(game.strikesLeft > 0){
+			if(tickCount % (30 / game.diffLevel) === 0) {
+				// Flip a coin to see if we drop a shape or not
+				var coin = Math.floor(Math.random()*2);
+				if (coin === 1){
+					// if (game.fsCount < 10){
+						// Coin has spoken! Let's generate a random shape and let it
+						// fall
+						// console.log('Message from Ticker');
+						game.generateFallingShape(physics);
+						physics.addMap(game.fsArray[game.fsCount - 1].body, game.fsArray[game.fsCount - 1].asset);
+						
+						// }
+					}
+				}
+		} else {
+			console.log('Game Over');
+			game.gameOver(physics);
+		}
+		});
 
-				// }
-			}
-		  }
-	});
+		tickCountCatch = 0;
+		physics.Ticker.add(() => {
+			tickCountCatch ++;
+			if(tickCountCatch % 30 === 0) {
+				console.log('Message from Ticker');
+			game.checkCaughtShapes(physics);
+		}
+	})
 	
 	// Set optional mouse dragging
 	// optionally pass in a list of bodies to receive mouse movement
@@ -422,16 +444,17 @@ frame.on("ready", function() {
 		if(e.m_fixtureA.m_body.height > 300){
 			console.log('stage Hit');
 			fsDropped = e.m_fixtureB.GetBody();
+			game.destroyShape(physics, fsDropped, 'touched-ground');
 		} else if(e.m_fixtureB.m_body.height > 300) {
 			console.log('stage Hit');
 			fsDropped = e.m_fixtureA.GetBody();
+			game.destroyShape(physics, fsDropped, 'touched-ground');
 		}
 		// TODO: Only remove shapes if their Y is close to the ground (this will
 		// help us ensuring shapes only get distructed when they hit the ground)
 		// TODO: removeMap is leaving the asset on the canvas. We need to
 		// destroy the asset too
 
-		game.destroyShape(physics, fsDropped, 'touched-ground');
 
 	}
 
