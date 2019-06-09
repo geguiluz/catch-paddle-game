@@ -96,6 +96,7 @@ class Game {
 				physics.removeMap(item.body);
 				physics.remove(item.body);
 				// TODO: Also remove the ZIM Asset
+				item.asset.dispose();
 				// Remove the current item from the array
 				game.fsArray.splice(index, 1);
 				game.fsCount --;
