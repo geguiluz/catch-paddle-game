@@ -1,0 +1,145 @@
+
+@font-face {
+    font-family: Obitron;
+    src: url(https://fonts.googleapis.com/css?family=Orbitron&display=swap);
+}
+
+:root {
+    --success-green: #279225; 
+    --darkest-gray: #060709;
+    --lightest-gray: #C4C4C4;
+    --warning-red: #5C0909;
+    --informative-blue: #056FD0;
+}
+
+body, html {
+    height: 100vh;
+}
+
+body{
+    margin: 0;
+    color: var(--lightest-gray);
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 75% 100px;
+    grid-template-areas: 
+        "canvas"
+        "information-bar";
+}
+
+/* canvas #myCanvas {
+    margin: 0;
+    padding: 0;
+    grid-area: canvas;
+    top: 0;
+} */
+
+.obi-text {
+    font-family: 'Orbitron', sans-serif;
+    text-align: center;
+    letter-spacing: .1rem;
+}
+
+information-bar {
+    /* body {
+        margin: 0; */
+    background-color: var(--darkest-gray);
+    display: grid;
+    z-index: 10;
+    grid-area: information-bar;
+    grid-template-columns: 27% auto 27%;
+    grid-template-rows: 50% 50%;
+    grid-template-areas:
+        "button-pause message-stripe catch-count-bar"
+        "button-restart level-indicator strikes-bar";
+    align-items: center;
+    justify-items: center;
+}
+
+.button{
+    /* display: inline-block; */
+    /* margin: .8rem 3rem .8rem 3rem; */
+    border: none;
+    /* padding: 15px 32px; */
+    width: 160px;
+    height: 35px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--lightest-gray);
+    font-size: .8rem;
+    border-radius: 5px;
+}
+
+.button:hover {
+    /* TODO: Change hover colors to more neutral ones */
+    background-color: #4CAF50; /* Green */
+    color: white;
+  }
+
+.informative-button{
+    background-color: var(--informative-blue);
+
+}
+
+.critical-button{
+    background-color: var(--warning-red);
+
+}
+
+button-pause {
+    grid-area: button-pause;
+    
+}
+
+message-stripe {
+    color: var(--success-green);
+    font-size: 2rem;
+    text-transform: uppercase;
+    grid-area: message-stripe;
+}
+
+
+catch-count-bar {
+    grid-area: catch-count-bar;
+    display: grid;
+    grid-gap: .35rem;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: auto;
+}
+
+.green-square{
+    background-color: var(--success-green);
+    border-radius: 2px;
+    width: 20px;
+    height: 20px;
+}
+
+.bar-bezel{
+    padding: 0 .35rem 0 .35rem;
+    border-width: 2px;
+    border-color: var(--lightest-gray);
+    border-radius: 5px;
+    border-style: solid;
+    height: 30px;
+    width: 250;
+    align-items: center;
+    /* background-color: red; */
+}
+
+button-restart {
+    grid-area: button-restart;
+    background-color: var(--warning-red);
+}
+
+level-indicator {
+    grid-area: level-indicator;
+    font-size: 1.3rem;
+}
+
+strikes-bar {
+    grid-area: strikes-bar;
+    display: grid;
+    grid-gap: 1.3rem;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: auto;
+}

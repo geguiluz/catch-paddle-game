@@ -5,20 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Catch Paddle Game</title>
-    <script src="https://d309knd7es5f10.cloudfront.net/createjs_1.1_min.js"></script>
-    <script src="https://d309knd7es5f10.cloudfront.net/zim_9.4.1.js"></script>
+    <script src="lib/createjs_1.1_min.js"></script>
+    <script src="lib/zim_9.4.1.js"></script>
     <!-- use zimjs.com/distill for minified individual functions! -->
-
     <!-- physics libraries -->
-    <script src="https://d309knd7es5f10.cloudfront.net/Box2dWeb-2.1.a.3.min.js"></script>
-    <!-- <script src="lib/physics_0.1.2.memo.1.js"></script> -->
+    <script src="lib/Box2dWeb-2.1.a.3.min.js"></script>
     <script src="lib/physics_1.0.memo.js"></script>
     <!-- Leap motion libraries -->
     <script src="lib/leap-0.6.4.js"></script>
     <!-- Main code -->
     <script src="src/main.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <!-- canvas with id="myCanvas" is made by zim Frame -->
+    <information-bar>
+        <button class = "button informative-button">Pause</button>
+        <button class = "button critical-button">Restart</button>
+        <message-stripe class = "obi-text">Good Catch!</message-stripe>
+        <level-indicator class = "obi-text">Level: 1 </level-indicator>
+        <catch-count-bar class = "bar-bezel">
+            <div class="green-square"></div>
+            <div class="green-square"></div>
+            <div class="green-square"></div>
+            <div class="green-square"></div>
+            <div class="green-square"></div>
+            <div class="green-square"></div>
+        </catch-count-bar>
+        <strikes-bar class = "bar-bezel">
+                <span>&#9760;</span>        
+                <span>&#9760;</span>        
+                <span>&#9760;</span>        
+                <span>&#9760;</span>                
+        </strikes-bar>
+    </information-bar>
 </body>
 </html>

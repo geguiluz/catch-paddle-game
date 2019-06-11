@@ -95,7 +95,7 @@ class Game {
 				// from the array doesn't kill them in the game world
 				physics.removeMap(item.body);
 				physics.remove(item.body);
-				// TODO: Also remove the ZIM Asset
+				// Also remove the ZIM Asset
 				item.asset.dispose();
 				// Remove the current item from the array
 				game.fsArray.splice(index, 1);
