@@ -22,14 +22,17 @@
         <div id="catchPaddle" class = "information-bar">
             <button class = "button informative-button button-pause">Pause</button>
             <button class = "button critical-button button-restart">Restart</button>
-            <div class = "message-stripe obi-text">Good Catch!</div>
+            <div class = "message-stripe obi-text">{{ gameSummary.messageBar[0].message }}</div>
             <div class = "level-indicator obi-text">Level: {{ gameSummary.diffLevel }} </div>
-            <green-square></green-square>
-            <div class = "strikes-bar bar-bezel">
-                <strike-square class = "strike-square">&#9760;</strike-square>        
-                <strike-square class = "strike-square">&#9760;</strike-square>        
-                <strike-square class = "strike-square">&#9760;</strike-square>        
-                <strike-square class = "strike-square">&#9760;</strike-square>        
+            <div class = "catch-count-bar bar-bezel">
+                <green-square
+                v-for="squares in gameSummary.catchArray"
+                ></green-square>
+            </div>
+            <div class = "strikes-left-bar bar-bezel">
+                <strike-square
+                v-for="squares in gameSummary.strikesArray"
+                ></strike-square>
             </div>
         </div>
 </body>

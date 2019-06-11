@@ -51,7 +51,7 @@ body{
     grid-template-rows: 50% 50%;
     grid-template-areas:
         "button-pause message-stripe catch-count-bar"
-        "button-restart level-indicator strikes-bar";
+        "button-restart level-indicator strikes-left-bar";
     align-items: center;
     justify-items: center;
 }
@@ -136,8 +136,8 @@ body{
     font-size: 1.3rem;
 }
 
-.strikes-bar {
-    grid-area: strikes-bar;
+.strikes-left-bar {
+    grid-area: strikes-left-bar;
     display: grid;
     grid-gap: 1.3rem;
     grid-template-columns: 1fr 1fr 1fr 1fr;
