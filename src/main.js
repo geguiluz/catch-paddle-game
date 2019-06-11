@@ -227,7 +227,7 @@ var diffFactor = game.diffLevel;
 
 // Create frame that will be used for both Leap Motion and Zim
 var frame = new Frame(scaling, width, height, color, outerColor);
-var debug2D = true;
+var debug2D = false;
 frame.on("ready", function() {
 	zog("ready from ZIM Frame");
 

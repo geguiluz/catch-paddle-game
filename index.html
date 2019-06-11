@@ -19,25 +19,21 @@
 </head>
 <body>
     <!-- canvas with id="myCanvas" is made by zim Frame -->
-    <information-bar>
-        <button class = "button informative-button">Pause</button>
-        <button class = "button critical-button">Restart</button>
-        <message-stripe class = "obi-text">Good Catch!</message-stripe>
-        <level-indicator class = "obi-text">Level: 1 </level-indicator>
-        <catch-count-bar class = "bar-bezel">
-            <div class="green-square"></div>
-            <div class="green-square"></div>
-            <div class="green-square"></div>
-            <div class="green-square"></div>
-            <div class="green-square"></div>
-            <div class="green-square"></div>
-        </catch-count-bar>
-        <strikes-bar class = "bar-bezel">
-                <span>&#9760;</span>        
-                <span>&#9760;</span>        
-                <span>&#9760;</span>        
-                <span>&#9760;</span>                
-        </strikes-bar>
-    </information-bar>
+        <div id="catchPaddle" class = "information-bar">
+            <button class = "button informative-button button-pause">Pause</button>
+            <button class = "button critical-button button-restart">Restart</button>
+            <div class = "message-stripe obi-text">Good Catch!</div>
+            <div class = "level-indicator obi-text">Level: {{ gameSummary.diffLevel }} </div>
+            <green-square></green-square>
+            <div class = "strikes-bar bar-bezel">
+                <strike-square class = "strike-square">&#9760;</strike-square>        
+                <strike-square class = "strike-square">&#9760;</strike-square>        
+                <strike-square class = "strike-square">&#9760;</strike-square>        
+                <strike-square class = "strike-square">&#9760;</strike-square>        
+            </div>
+        </div>
 </body>
-</html>
+          <!-- development version, includes helpful console warnings -->
+          <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+          <script src="src/front-end-logic.js"></script>
+</html>∫

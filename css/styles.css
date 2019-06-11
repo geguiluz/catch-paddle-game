@@ -40,7 +40,7 @@ body{
     letter-spacing: .1rem;
 }
 
-information-bar {
+.information-bar {
     /* body {
         margin: 0; */
     background-color: var(--darkest-gray);
@@ -86,12 +86,12 @@ information-bar {
 
 }
 
-button-pause {
+.button-pause {
     grid-area: button-pause;
     
 }
 
-message-stripe {
+.message-stripe {
     color: var(--success-green);
     font-size: 2rem;
     text-transform: uppercase;
@@ -99,7 +99,7 @@ message-stripe {
 }
 
 
-catch-count-bar {
+.catch-count-bar {
     grid-area: catch-count-bar;
     display: grid;
     grid-gap: .35rem;
@@ -126,17 +126,17 @@ catch-count-bar {
     /* background-color: red; */
 }
 
-button-restart {
+.button-restart {
     grid-area: button-restart;
     background-color: var(--warning-red);
 }
 
-level-indicator {
+.level-indicator {
     grid-area: level-indicator;
     font-size: 1.3rem;
 }
 
-strikes-bar {
+.strikes-bar {
     grid-area: strikes-bar;
     display: grid;
     grid-gap: 1.3rem;
