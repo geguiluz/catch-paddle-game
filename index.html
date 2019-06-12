@@ -14,29 +14,32 @@
     <!-- Leap motion libraries -->
     <script src="lib/leap-0.6.4.js"></script>
     <!-- Main code -->
-    <script src="src/main.js"></script>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <!-- canvas with id="myCanvas" is made by zim Frame -->
-        <div id="catchPaddle" class = "information-bar">
-            <button class = "button informative-button button-pause">Pause</button>
-            <button class = "button critical-button button-restart">Restart</button>
-            <div class = "message-stripe obi-text">{{ gameSummary.messageBar[0].message }}</div>
-            <div class = "level-indicator obi-text">Level: {{ gameSummary.diffLevel }} </div>
-            <div class = "catch-count-bar bar-bezel">
-                <green-square
-                v-for="squares in gameSummary.catchArray"
-                ></green-square>
-            </div>
-            <div class = "strikes-left-bar bar-bezel">
-                <strike-square
-                v-for="squares in gameSummary.strikesArray"
-                ></strike-square>
-            </div>
+    <div id="catchPaddle" class = "information-bar">
+        <button class = "button informative-button button-pause">Pause</button>
+        <button class = "button critical-button button-restart">Restart</button>
+        <!-- <div class = "message-stripe obi-text">{{ gameSummary.messageBar.message }}</div> -->
+        <div class = "message-stripe obi-text">{{ gameSummary.strikesLeft }} {{ gameSummary.catchCount }}</div>
+        <div class = "level-indicator obi-text">Level: {{ gameSummary.diffLevel }} </div>
+        <div class = "catch-count-bar bar-bezel">
+            <green-square
+            v-for="(squares, index) in gameSummary.catchSquareArray"
+            :key="index"
+            ></green-square>
         </div>
+        <div class = "strikes-left-bar bar-bezel">
+            <strike-square
+            v-for="(squares, index) in gameSummary.strikesSquareArray"
+            :key="index"
+            ></strike-square>
+        </div>
+    </div>
 </body>
-          <!-- development version, includes helpful console warnings -->
-          <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-          <script src="src/front-end-logic.js"></script>
+<!-- development version, includes helpful console warnings -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="src/front-end-logic.js"></script>
+<script src="src/main.js"></script>
 </html>∫

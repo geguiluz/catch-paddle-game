@@ -53,6 +53,9 @@ class Game {
 		this.catchCount = 0;
 		this.strikesLeft = 4;
 
+		this.catchSquareArray = ['x'];
+		this.strikesSquareArray = ['x', 'x', 'x', 'x'];
+
 		this.paddleControl = new HandController(300,300);
 
 		this.validShapeTypes = ['circle', 'rectangle'];
@@ -67,6 +70,7 @@ class Game {
 	gameOver(physics){
 		physics.dispose();
 	}
+
 	startGame(){
 
 	}
@@ -103,12 +107,14 @@ class Game {
 				if (event === 'touched-ground') {
 					// If event === 'touched-ground', also decrease game.strikesLeft
 					game.strikesLeft --;
+					game.updateGameBars();
 					console.log('Strikes left =', game.strikesLeft);
 				}
 				if (event === 'good-catch') {
 					// If event === 'good-catch', the game.catchCount by 1 (this is the
 					// game score)
 					game.catchCount ++;
+					game.updateGameBars();
 					console.log('Catch Count =', game.catchCount);
 				}
 			}
@@ -135,6 +141,43 @@ class Game {
 			}
 		});
 
+	}
+	updateGameBars(){
+		var catchDelta = this.catchCount - this.catchSquareArray.length;
+		var strikesDelta = this.strikesLeft - this.strikesSquareArray.length;
+		this.matchBarArrays(catchDelta, 'catch-bar');
+		this.matchBarArrays(strikesDelta, 'strikes-bar');
+
+		// Update values in gameVue
+		gameVue.gameSummary.diffLevel = this.diffLevel;
+		gameVue.gameSummary.catchCount = this.catchCount;
+		gameVue.gameSummary.strikesLeft = this.strikesLeft;
+
+		gameVue.gameSummary.catchSquareArray = this.catchSquareArray;
+		gameVue.gameSummary.strikesSquareArray = this.strikesSquareArray;
+		console.log('Catch Array', gameVue.gameSummary.catchSquareArray);
+		console.log('Strikes Array', gameVue.gameSummary.strikesSquareArray);
+	}
+	matchBarArrays(delta, barType){
+		if (delta < 0) {
+			for (i = 0; i < Math.abs(delta); i++){
+				// Remove array elements until quantities match
+				if (barType === 'catch-bar'){
+					game.catchSquareArray.pop();
+				} else {
+					game.strikesSquareArray.pop();
+				}
+			}
+		} else if (delta > 0){
+			for (i = 0; i < Math.abs(delta); i++){
+				// Add array elements until quantities match
+				if (barType === 'catch-bar'){
+					game.catchSquareArray.push('x');
+				} else {
+					game.strikesSquareArray.puxh('x');
+				}                
+			}
+		}
 	}
 }
 
@@ -199,7 +242,7 @@ class FallingShape {
 		// The value of X should be a random between the start and the end
 		// of the paddleController width
 		this.body.x = 300 + Math.floor(Math.random() * 600);
-		console.log(this.body.x);
+		// console.log(this.body.x);
 		this.body.y = 80;
 	}
 }
@@ -323,7 +366,7 @@ frame.on("ready", function() {
 					}
 				}
 		} else {
-			console.log('Game Over');
+			// console.log('Game Over');
 			game.gameOver(physics);
 		}
 		});
@@ -332,7 +375,7 @@ frame.on("ready", function() {
 		physics.Ticker.add(() => {
 			tickCountCatch ++;
 			if(tickCountCatch % 30 === 0) {
-				console.log('Message from Ticker');
+				// console.log('Message from Ticker');
 			game.checkCaughtShapes(physics);
 		}
 	})
@@ -432,10 +475,10 @@ frame.on("ready", function() {
 		// paddle in either fixtureA or fixtureB (it's not always consistent)
 		var fsCrashed = '';
 		if(e.m_fixtureA.m_body === paddleBody){
-			console.log('paddleBody Hit');
+			// console.log('paddleBody Hit');
 			fsCrashed = e.m_fixtureB.GetBody();
 		} else if(e.m_fixtureB.m_body === paddleBody) {
-			console.log('paddleBody Hit');
+			// console.log('paddleBody Hit');
 			fsCrashed = e.m_fixtureA.GetBody();
 		}
 
@@ -453,11 +496,11 @@ frame.on("ready", function() {
 
 		var fsDropped = '';
 		if(e.m_fixtureA.m_body.height > 300){
-			console.log('stage Hit');
+			// console.log('stage Hit');
 			fsDropped = e.m_fixtureB.GetBody();
 			game.destroyShape(physics, fsDropped, 'touched-ground');
 		} else if(e.m_fixtureB.m_body.height > 300) {
-			console.log('stage Hit');
+			// console.log('stage Hit');
 			fsDropped = e.m_fixtureA.GetBody();
 			game.destroyShape(physics, fsDropped, 'touched-ground');
 		}
