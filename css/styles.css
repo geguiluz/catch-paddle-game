@@ -27,12 +27,12 @@ body{
         "information-bar";
 }
 
-/* canvas #myCanvas {
+canvas #myCanvas {
     margin: 0;
     padding: 0;
     grid-area: canvas;
     top: 0;
-} */
+}
 
 .obi-text {
     font-family: 'Orbitron', sans-serif;
@@ -142,4 +142,8 @@ body{
     grid-gap: 1.3rem;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-template-rows: auto;
+}
+
+.hidden {
+    visibility: hidden;
 }

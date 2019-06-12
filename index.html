@@ -19,10 +19,11 @@
 <body>
     <!-- canvas with id="myCanvas" is made by zim Frame -->
     <div id="catchPaddle" class = "information-bar">
-        <button class = "button informative-button button-pause">Pause</button>
-        <button class = "button critical-button button-restart">Restart</button>
-        <!-- <div class = "message-stripe obi-text">{{ gameSummary.messageBar.message }}</div> -->
-        <div class = "message-stripe obi-text">{{ gameSummary.strikesLeft }} {{ gameSummary.catchCount }}</div>
+        <button class = "button informative-button button-pause" onclick = "game.gameOver();">Pause</button>
+        <button class = "button critical-button button-restart" onclick="game.reStartGame()">Restart</button>
+        <div class = "message-stripe obi-text">{{ gameSummary.messageBar.message }}</div>
+        <span class = "hidden">{{ gameSummary.strikesLeft }} {{ gameSummary.catchCount }}</span>
+        <!-- <div class = "message-stripe obi-text">{{ gameSummary.strikesLeft }} {{ gameSummary.catchCount }}</div> -->
         <div class = "level-indicator obi-text">Level: {{ gameSummary.diffLevel }} </div>
         <div class = "catch-count-bar bar-bezel">
             <green-square

@@ -48,32 +48,40 @@ class HandController {
 
 class Game {
 	constructor(){
+		// Game config
+		this.levelCatchLimit = 5;
+		this.gameOverFlag = false;
 
-		this.diffLevel = 1.5;
+		// Game Summary
+		this.levelCount = 1;
+		this.diffLevel = 1;
 		this.catchCount = 0;
 		this.strikesLeft = 4;
 
+		this.reStartGame();
+
+		// Supporting structures for frontend
 		this.catchSquareArray = ['x'];
 		this.strikesSquareArray = ['x', 'x', 'x', 'x'];
 
+		// Hand controller
 		this.paddleControl = new HandController(300,300);
 
+		// Falling shapes related
 		this.validShapeTypes = ['circle', 'rectangle'];
 		this.fsSize = '80'
 		this.fsArray = [];
 		this.fsCount = 0;
 	}
 
-	updateScore(){
-
-	}
-	gameOver(physics){
-		physics.dispose();
+	gameOver(){
+		this.gameOverFlag = true;
 	}
 
-	startGame(){
-
+	reStartGame(){
+		
 	}
+
 	generateFallingShape(physics){
 		// Try and use the Ticker on physics in order to generate new random
 		// shapes at random times by flipping a coin
@@ -83,6 +91,7 @@ class Game {
 		this.fsArray.push(newShape);
 		return newShape;
 	}
+
 	destroyShape(physics, fsToDestroy, event){
 		// This function is called from contact listener instead of destroying
 		// bodies directly there in order to destroy all falling shapes that touch
@@ -102,26 +111,36 @@ class Game {
 				// Also remove the ZIM Asset
 				item.asset.dispose();
 				// Remove the current item from the array
-				game.fsArray.splice(index, 1);
-				game.fsCount --;
+				this.fsArray.splice(index, 1);
+				this.fsCount --;
 				if (event === 'touched-ground') {
 					// If event === 'touched-ground', also decrease game.strikesLeft
-					game.strikesLeft --;
-					game.updateGameBars();
-					console.log('Strikes left =', game.strikesLeft);
+					this.strikesLeft --;
+					this.updateGameBars();
+					console.log('Strikes left =', this.strikesLeft);
 				}
 				if (event === 'good-catch') {
 					// If event === 'good-catch', the game.catchCount by 1 (this is the
 					// game score)
-					game.catchCount ++;
-					game.updateGameBars();
-					console.log('Catch Count =', game.catchCount);
+					this.increaseCatches();
 				}
 			}
 		});
-		
-
 	}
+
+	increaseCatches(){
+		this.catchCount ++;
+		this.updateGameBars();
+		if (this.catchCount >= this.levelCatchLimit + 2){
+			this.strikesLeft = 4;
+			this.catchCount = 1;
+			this.levelCount ++;
+			this.diffLevel = this.diffLevel + (this.levelCount) / 10;
+			console.log("Valor de diffLevel", this.diffLevel);
+		}
+		console.log('Catch count =', this.catchCount);
+	}
+
 	checkCaughtShapes(physics){
 		// This function is called from the Ticker to continually check for
 		// good catches
@@ -142,14 +161,15 @@ class Game {
 		});
 
 	}
+
 	updateGameBars(){
 		var catchDelta = this.catchCount - this.catchSquareArray.length;
 		var strikesDelta = this.strikesLeft - this.strikesSquareArray.length;
-		this.matchBarArrays(catchDelta, 'catch-bar');
+		this.catchCount <= this.levelCatchLimit + 1 ? this.matchBarArrays(catchDelta, 'catch-bar') : true;
 		this.matchBarArrays(strikesDelta, 'strikes-bar');
 
 		// Update values in gameVue
-		gameVue.gameSummary.diffLevel = this.diffLevel;
+		gameVue.gameSummary.diffLevel = this.levelCount;
 		gameVue.gameSummary.catchCount = this.catchCount;
 		gameVue.gameSummary.strikesLeft = this.strikesLeft;
 
@@ -158,6 +178,7 @@ class Game {
 		console.log('Catch Array', gameVue.gameSummary.catchSquareArray);
 		console.log('Strikes Array', gameVue.gameSummary.strikesSquareArray);
 	}
+
 	matchBarArrays(delta, barType){
 		if (delta < 0) {
 			for (i = 0; i < Math.abs(delta); i++){
@@ -174,7 +195,7 @@ class Game {
 				if (barType === 'catch-bar'){
 					game.catchSquareArray.push('x');
 				} else {
-					game.strikesSquareArray.puxh('x');
+					game.strikesSquareArray.push('x');
 				}                
 			}
 		}
@@ -351,10 +372,11 @@ frame.on("ready", function() {
 	var tickCount = 0;
 	physics.Ticker.add(() => {
 		tickCount ++;
-		if(game.strikesLeft > 0){
+		if(game.strikesLeft > 0 && !game.gameOverFlag){
 			// Count the number of strikes left. If they equal zero, call game
 			// over function
-			if(tickCount % (30 / game.diffLevel) === 0) {
+			var tickControl = 30 * game.diffLevel;
+			if(tickCount % tickControl === 0) {
 				// Flip a coin to see if we drop a shape or not
 				var coin = Math.floor(Math.random()*2);
 				if (coin === 1){
@@ -366,8 +388,9 @@ frame.on("ready", function() {
 					}
 				}
 		} else {
-			// console.log('Game Over');
-			game.gameOver(physics);
+			console.log('Game Over');
+			game.gameOver();
+			physics.dispose();
 		}
 		});
 
