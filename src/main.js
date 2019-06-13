@@ -51,14 +51,16 @@ class Game {
 		// Game config
 		this.levelCatchLimit = 5;
 		this.gameOverFlag = false;
+		this.pauseFlag = false;
 
 		// Game Summary
 		this.levelCount = 1;
 		this.diffLevel = 1;
 		this.catchCount = 0;
 		this.strikesLeft = 4;
+		this.globalScore = 0;
 
-		this.reStartGame();
+		// this.reStartGame();
 
 		// Supporting structures for frontend
 		this.catchSquareArray = ['x'];
@@ -69,17 +71,32 @@ class Game {
 
 		// Falling shapes related
 		this.validShapeTypes = ['circle', 'rectangle'];
-		this.fsSize = '80'
+		this.fsSize = '65'
 		this.fsArray = [];
 		this.fsCount = 0;
 	}
 
 	gameOver(){
 		this.gameOverFlag = true;
+		// TODO: Show splash screen on top of canvas
+	}
+
+	pauseGame(){
+		this.pauseFlag = !this.pauseFlag;
+		// TODO: Show splash screen on top of canvas
+		
+		// TODO: Toggle flag in vue, so button text can change between
+		// pause/resume
+		gameVue.gameSummary.pauseFlag = this.pauseFlag;
+		gameVue.gameSummary.pauseButtonText = this.pauseFlag ? 'Resume' : 'Pause';
+
 	}
 
 	reStartGame(){
-		
+		// TODO: Either efresh page or navigate back to start screen (it could
+		// be a different HTML)
+
+		window.location.reload()
 	}
 
 	generateFallingShape(physics){
@@ -130,8 +147,10 @@ class Game {
 
 	increaseCatches(){
 		this.catchCount ++;
+		this.globalScore ++;
 		this.updateGameBars();
 		if (this.catchCount >= this.levelCatchLimit + 2){
+			// Reset level scores
 			this.strikesLeft = 4;
 			this.catchCount = 1;
 			this.levelCount ++;
@@ -172,6 +191,8 @@ class Game {
 		gameVue.gameSummary.diffLevel = this.levelCount;
 		gameVue.gameSummary.catchCount = this.catchCount;
 		gameVue.gameSummary.strikesLeft = this.strikesLeft;
+		gameVue.gameSummary.globalScore = this.globalScore;
+
 
 		gameVue.gameSummary.catchSquareArray = this.catchSquareArray;
 		gameVue.gameSummary.strikesSquareArray = this.strikesSquareArray;
@@ -207,8 +228,10 @@ class FallingShape {
 		this.shapeType = shapeType;
 		this.size = size;
 		this.physics = physics;
-		this.friction = .7 / diffFactor;
-		this.restitution = .6 * diffFactor;
+		this.friction = .7;
+		// Restitution limited to 2, otherwise shapes would bounce outside the
+		// top of the canvas and higher levels would actually turn easier
+		this.restitution = .6 * (diffFactor > 2 ? 2 : diffFactor);
 		this.body = this.createBody(shapeType);
 		this.setStartPosition();
 		this.asset = this.createZimAsset(shapeType);
@@ -326,9 +349,8 @@ frame.on("ready", function() {
 	// here we specify width, height, radius
 	// so we can use both for Box2D shapes and ZIM shapes
 
-	var barW = 600;
-	var barH = 70;
-	// var fsSize = 80;
+	var barW = 500;
+	var barH = 30;
 
 	// DEBUG
 	// optionally see the BOX 2D debug canvas 
@@ -375,11 +397,17 @@ frame.on("ready", function() {
 		if(game.strikesLeft > 0 && !game.gameOverFlag){
 			// Count the number of strikes left. If they equal zero, call game
 			// over function
-			var tickControl = 30 * game.diffLevel;
+
+			// Lower tick control values increase the frequency in which shapes
+			// are dropped
+			var tickControl = 30 - (game.diffLevel * 5); // Reasonably eaasy to get to level 9
+			// var tickControl = 25 - (game.diffLevel * 4); // Difficult since level 2
+
+			
 			if(tickCount % tickControl === 0) {
 				// Flip a coin to see if we drop a shape or not
 				var coin = Math.floor(Math.random()*2);
-				if (coin === 1){
+				if (coin === 1 && !game.pauseFlag){
 					// Coin has spoken! Let's generate a random shape and let it
 					// fall
 					// console.log('Message from Ticker');
@@ -466,7 +494,7 @@ frame.on("ready", function() {
 
 	// Keyboard input
 	window.addEventListener('keydown', e => {
-		var inc = 5;
+		var inc = 50;
 		if(e.keyCode === 38) {
 			// Up Arrow
 			paddleControl.updateCoordinates(paddleControl.x, paddleControl.y - inc, paddleBody);

@@ -1,3 +1,8 @@
+/* 
+------------------------------------------------
+GENERAL ELEMENTS
+------------------------------------------------ 
+*/
 
 @font-face {
     font-family: Obitron;
@@ -21,18 +26,19 @@ body{
     color: var(--lightest-gray);
     display: grid;
     grid-template-columns: auto;
-    grid-template-rows: 75% 100px;
+    grid-template-rows: 85% 100px;
     grid-template-areas: 
         "canvas"
         "information-bar";
+    justify-items: center;
 }
 
-canvas #myCanvas {
+/* canvas #myCanvas {
     margin: 0;
     padding: 0;
     grid-area: canvas;
     top: 0;
-}
+} */
 
 .obi-text {
     font-family: 'Orbitron', sans-serif;
@@ -40,9 +46,17 @@ canvas #myCanvas {
     letter-spacing: .1rem;
 }
 
+.hidden {
+    visibility: hidden;
+}
+
+/* 
+------------------------------------------------
+GRID CONTROL
+------------------------------------------------ 
+*/
+
 .information-bar {
-    /* body {
-        margin: 0; */
     background-color: var(--darkest-gray);
     display: grid;
     z-index: 10;
@@ -54,7 +68,36 @@ canvas #myCanvas {
         "button-restart level-indicator strikes-left-bar";
     align-items: center;
     justify-items: center;
+    width: 100%;
 }
+
+@media screen and (min-width: 921px){
+    .information-bar {
+        width: 951px;
+    }
+}
+
+@media screen and (min-width: 921px){
+    .information-bar {
+        width: 951px;
+    }
+}
+
+@media screen and (min-height: 770px){
+        .body {
+            grid-template-rows: 75% 100px;
+        }
+    }
+@media screen and (min-height: 660px){
+        .body {
+            grid-template-rows: 78% 100px;
+        }
+    }
+/* 
+------------------------------------------------
+BUTTONS
+------------------------------------------------ 
+*/
 
 .button{
     /* display: inline-block; */
@@ -72,7 +115,7 @@ canvas #myCanvas {
 
 .button:hover {
     /* TODO: Change hover colors to more neutral ones */
-    background-color: #4CAF50; /* Green */
+    background-color: var(--success-green); /* Green */
     color: white;
   }
 
@@ -90,6 +133,12 @@ canvas #myCanvas {
     grid-area: button-pause;
     
 }
+
+/* 
+------------------------------------------------
+GAME SUMMARY DISPLAY
+------------------------------------------------ 
+*/
 
 .message-stripe {
     color: var(--success-green);
@@ -144,6 +193,3 @@ canvas #myCanvas {
     grid-template-rows: auto;
 }
 
-.hidden {
-    visibility: hidden;
-}
