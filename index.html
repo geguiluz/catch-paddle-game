@@ -19,8 +19,11 @@
 <body>
     <div class="grid-container" id="catchPaddle">
         <!-- canvas with id="myCanvas" is made by zim Frame -->
+        <div class="canvas-dummy"></div>
         <div  class = "information-bar">
-            <button class = "button informative-button button-pause" onclick = "game.pauseGame();">{{ gameSummary.pauseButtonText }}</button>
+            <button class = "button informative-button button-pause" onclick = "game.pauseGame();"
+            :class="[gameSummary.pauseFlag ? 'blink' : '']"
+            >{{ gameSummary.pauseButtonText }}</button>
             <button class = "button critical-button button-restart" onclick="game.reStartGame()">Restart</button>
             <div class = "message-stripe obi-text">Catch Count: {{ gameSummary.globalScore }}</div>
             <span class = "hidden">{{ gameSummary.strikesLeft }} {{ gameSummary.catchCount }}</span>
@@ -53,4 +56,4 @@
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="src/front-end-logic.js"></script>
 <script src="src/main.js"></script>
-</html>∫
+</html>

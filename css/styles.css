@@ -16,6 +16,8 @@ GENERAL ELEMENTS
     --warning-red: #5C0909;
     --transparent-red: rgba(92, 9, 9, 50%);
     --informative-blue: #056FD0;
+    
+    --square-size: 20px;
 }
 
 body, html {
@@ -28,7 +30,7 @@ body, html {
     display: grid;
     grid-template-columns: auto;
     /* grid-template-rows: 85% 100px; */
-    grid-template-rows: 267% 100px;
+    grid-template-rows: 80vh 100px;
     grid-template-areas: 
         "canvas"
         "information-bar";
@@ -36,12 +38,9 @@ body, html {
     align-items: center;
 }
 
-canvas #myCanvas {
-    margin: 0;
-    padding: 0;
-    grid-area: canvas;
-    top: 0;
-}
+/* .canvas-dummy{
+    height: 70vh;
+} */
 
 .obi-text {
     font-family: 'Orbitron', sans-serif;
@@ -74,28 +73,29 @@ GRID CONTROL
     width: 100%;
 }
 
-@media screen and (min-width: 921px){
+@media screen and (min-width: 951px){
     .information-bar {
         width: 951px;
     }
 }
 
-@media screen and (min-width: 921px){
+@media screen and (max-width: 700px){
     .information-bar {
-        width: 951px;
+        width: 100%;
     }
 }
 
-@media screen and (min-height: 770px){
-        .body {
-            grid-template-rows: 75% 100px;
+@media screen and (max-height: 770px){
+        .grid-container {
+            grid-template-rows: 80vh 100px;
         }
     }
-@media screen and (min-height: 660px){
-        .body {
-            grid-template-rows: 78% 100px;
+/* @media screen and (min-height: 660px){
+        .grid-container {
+            grid-template-rows: 415% 100px;
         }
-    }
+    } */
+
 /* 
 ------------------------------------------------
 BUTTONS
@@ -120,7 +120,7 @@ BUTTONS
     /* TODO: Change hover colors to more neutral ones */
     background-color: var(--success-green); /* Green */
     color: white;
-  }
+}
 
 .informative-button{
     background-color: var(--informative-blue);
@@ -157,7 +157,7 @@ GAME SUMMARY DISPLAY
 
 .message-stripe {
     color: var(--success-green);
-    font-size: 2rem;
+    font-size: 2em;
     text-transform: uppercase;
     grid-area: message-stripe;
 }
@@ -174,8 +174,10 @@ GAME SUMMARY DISPLAY
 .green-square{
     background-color: var(--success-green);
     border-radius: 2px;
-    width: 20px;
-    height: 20px;
+    width: var(--square-size);
+    height: var(--square-size);
+    animation: fade-in .3s ease-in 0s;
+
 }
 
 .bar-bezel{
@@ -285,5 +287,14 @@ ANIMATIONS
   @keyframes blink {
     50% {
       opacity: 0;
+    }
+  }
+
+  @keyframes fade-in{
+    0% {
+      width: 0;
+    }
+    100% {
+     width: var(--square-size);
     }
   }

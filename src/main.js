@@ -74,6 +74,9 @@ class Game {
 		this.fsSize = '65'
 		this.fsArray = [];
 		this.fsCount = 0;
+
+		// Audio
+		// this.catchSound = new Audio('./assets/audio/23646270_game-coin_by_loopbox_preview.mp3');
 	}
 
 	gameOver(){
@@ -134,14 +137,13 @@ class Game {
 				this.fsCount --;
 				if (event === 'touched-ground') {
 					// If event === 'touched-ground', also decrease game.strikesLeft
-					this.strikesLeft --;
-					this.updateGameBars();
-					console.log('Strikes left =', this.strikesLeft);
+					this.decreaseStrikes();
 				}
 				if (event === 'good-catch') {
 					// If event === 'good-catch', the game.catchCount by 1 (this is the
 					// game score)
 					this.increaseCatches();
+					// this.catchSound.play();
 				}
 			}
 		});
@@ -160,6 +162,15 @@ class Game {
 			console.log("Valor de diffLevel", this.diffLevel);
 		}
 		console.log('Catch count =', this.catchCount);
+		
+	}
+	
+	decreaseStrikes(){
+		this.strikesLeft --;
+		this.updateGameBars();
+		console.log('Strikes left =', this.strikesLeft);
+		
+		// TODO: Play bad catch sound
 	}
 
 	checkCaughtShapes(physics){
@@ -186,7 +197,7 @@ class Game {
 	updateGameBars(){
 		var catchDelta = this.catchCount - this.catchSquareArray.length;
 		var strikesDelta = this.strikesLeft - this.strikesSquareArray.length;
-		this.catchCount <= this.levelCatchLimit + 1 ? this.matchBarArrays(catchDelta, 'catch-bar') : true;
+		this.catchCount <= this.levelCatchLimit +1 ? this.matchBarArrays(catchDelta, 'catch-bar') : true;
 		this.matchBarArrays(strikesDelta, 'strikes-bar');
 
 		// Update values in gameVue
@@ -241,6 +252,7 @@ class FallingShape {
 		// Crash/catch-related variables
 		this.crashFlag = false;
 		this.secondsOnPaddle = 0;
+
 	}
 	createBody(shapeType){
 		// Box2D body assets specifying dynamic and other properties
@@ -269,15 +281,20 @@ class FallingShape {
 		return body;
 	}
 	createZimAsset(shapeType){
+		
 		// Create ZIM assets to match physics world
 		// Box2D bodies (made by physics.js) have centered positions
 		// so center the registration points for ZIM assets
+		
+		// Color randomizer
+		var colorArray = ['#e472c4', '#f58e25'];
+
 		if (shapeType === 'circle'){
-			var asset = new Circle(this.size / 2, '#e472c4')
+			var asset = new Circle(this.size / 2, colorArray[Math.floor(Math.random() * colorArray.length)])
 				.center();
 			asset.cursor = "pointer";
 		} else {
-			var asset = new Rectangle(this.size, this.size, '#f58e25')
+			var asset = new Rectangle(this.size, this.size, colorArray[Math.floor(Math.random() * colorArray.length)])
 				.centerReg();
 			asset.cursor = "pointer";
 		}
