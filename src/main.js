@@ -79,6 +79,8 @@ class Game {
 	gameOver(){
 		this.gameOverFlag = true;
 		// TODO: Show splash screen on top of canvas
+		gameVue.gameSummary.gameOverFlag = this.gameOverFlag;
+
 	}
 
 	pauseGame(){
@@ -95,7 +97,7 @@ class Game {
 	reStartGame(){
 		// TODO: Either efresh page or navigate back to start screen (it could
 		// be a different HTML)
-
+		gameVue.gameSummary.pauseFlag = this.pauseFlag;
 		window.location.reload()
 	}
 

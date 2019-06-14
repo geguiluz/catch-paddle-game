@@ -14,6 +14,7 @@ GENERAL ELEMENTS
     --darkest-gray: #060709;
     --lightest-gray: #C4C4C4;
     --warning-red: #5C0909;
+    --transparent-red: rgba(92, 9, 9, 50%);
     --informative-blue: #056FD0;
 }
 
@@ -21,24 +22,26 @@ body, html {
     height: 100vh;
 }
 
-body{
+.grid-container{
     margin: 0;
     color: var(--lightest-gray);
     display: grid;
     grid-template-columns: auto;
-    grid-template-rows: 85% 100px;
+    /* grid-template-rows: 85% 100px; */
+    grid-template-rows: 267% 100px;
     grid-template-areas: 
         "canvas"
         "information-bar";
     justify-items: center;
+    align-items: center;
 }
 
-/* canvas #myCanvas {
+canvas #myCanvas {
     margin: 0;
     padding: 0;
     grid-area: canvas;
     top: 0;
-} */
+}
 
 .obi-text {
     font-family: 'Orbitron', sans-serif;
@@ -59,7 +62,7 @@ GRID CONTROL
 .information-bar {
     background-color: var(--darkest-gray);
     display: grid;
-    z-index: 10;
+    z-index: 20;
     grid-area: information-bar;
     grid-template-columns: 27% auto 27%;
     grid-template-rows: 50% 50%;
@@ -129,10 +132,22 @@ BUTTONS
 
 }
 
+
 .button-pause {
     grid-area: button-pause;
     
 }
+
+.splash-button{
+    background-color: var(--success-green);
+}
+
+.splash-button:hover{
+    border-style: solid; 
+    border-color: var(--lightest-gray);
+}
+
+
 
 /* 
 ------------------------------------------------
@@ -193,3 +208,82 @@ GAME SUMMARY DISPLAY
     grid-template-rows: auto;
 }
 
+/* 
+------------------------------------------------
+SPLASH SCREENS
+------------------------------------------------ 
+*/
+
+.game-over-splash {
+    display: grid;
+    grid-area: canvas;
+    font-size: 4em;
+    height: 70%;
+    width: 70%;
+    z-index: 10;
+    background-color: var(--transparent-red);
+    align-items: center;
+    justify-items: center;
+    border-radius: 10px;
+}
+
+/* 
+------------------------------------------------
+ANIMATIONS
+------------------------------------------------ 
+*/
+
+.wrong {
+    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+}
+  
+.right { 
+    /* position: fixed; */
+    animation: nod 0.82s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.blink {
+    animation: blink 1s linear infinite;
+}
+
+@keyframes shake {
+    10%, 90% {
+      transform: translate3d(-1px, 0, 0);
+    }
+    
+    20%, 80% {
+      transform: translate3d(2px, 0, 0);
+    }
+  
+    30%, 50%, 70% {
+      transform: translate3d(-4px, 0, 0);
+    }
+  
+    40%, 60% {
+      transform: translate3d(4px, 0, 0);
+    }
+  }
+  
+  @keyframes nod {
+    10%, 90% {
+      transform: translate3d(0, -1px, 0);
+    }
+    
+    20%, 80% {
+      transform: translate3d(0, 2px, 0);
+    }
+  
+    30%, 50%, 70% {
+      transform: translate3d(0, -4px, 0);
+    }
+  
+    40%, 60% {
+      transform: translate3d(0, 4px, 0);
+    }
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }

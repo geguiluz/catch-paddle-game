@@ -29,7 +29,9 @@ var gameVue = new Vue({
             // TODO: Make strikes blink if strikesLeft < 1
 
             //TODO: Shake strikes bar on shape drop
-        }
+
+        },
+        gameOverFlag: false
       }
     }
 });

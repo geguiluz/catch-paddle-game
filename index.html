@@ -17,25 +17,35 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <!-- canvas with id="myCanvas" is made by zim Frame -->
-    <div id="catchPaddle" class = "information-bar">
-        <button class = "button informative-button button-pause" onclick = "game.pauseGame();">{{ gameSummary.pauseButtonText }}</button>
-        <button class = "button critical-button button-restart" onclick="game.reStartGame()">Restart</button>
-        <div class = "message-stripe obi-text">Catch Count: {{ gameSummary.globalScore }}</div>
-        <span class = "hidden">{{ gameSummary.strikesLeft }} {{ gameSummary.catchCount }}</span>
-        <!-- <div class = "message-stripe obi-text">{{ gameSummary.strikesLeft }} {{ gameSummary.catchCount }}</div> -->
-        <div class = "level-indicator obi-text">Level: {{ gameSummary.diffLevel }} </div>
-        <div class = "catch-count-bar bar-bezel">
-            <green-square
-            v-for="(squares, index) in gameSummary.catchSquareArray"
-            :key="index"
-            ></green-square>
+    <div class="grid-container" id="catchPaddle">
+        <!-- canvas with id="myCanvas" is made by zim Frame -->
+        <div  class = "information-bar">
+            <button class = "button informative-button button-pause" onclick = "game.pauseGame();">{{ gameSummary.pauseButtonText }}</button>
+            <button class = "button critical-button button-restart" onclick="game.reStartGame()">Restart</button>
+            <div class = "message-stripe obi-text">Catch Count: {{ gameSummary.globalScore }}</div>
+            <span class = "hidden">{{ gameSummary.strikesLeft }} {{ gameSummary.catchCount }}</span>
+            <!-- <div class = "message-stripe obi-text">{{ gameSummary.strikesLeft }} {{ gameSummary.catchCount }}</div> -->
+            <div class = "level-indicator obi-text">Level: {{ gameSummary.diffLevel }} </div>
+            <div class = "catch-count-bar bar-bezel">
+                <green-square
+                v-for="(squares, index) in gameSummary.catchSquareArray"
+                :key="index"
+                ></green-square>
+            </div>
+            <div class = "strikes-left-bar bar-bezel">
+                <strike-square
+                v-for="(squares, index) in gameSummary.strikesSquareArray"
+                :key="index"
+                :class="[gameSummary.strikesSquareArray.length < 3 ? 'blink' : '']"
+                ></strike-square>
+            </div>
         </div>
-        <div class = "strikes-left-bar bar-bezel">
-            <strike-square
-            v-for="(squares, index) in gameSummary.strikesSquareArray"
-            :key="index"
-            ></strike-square>
+        <div class="canvas game-over-splash obi-text"
+        :style.visibility="[gameSummary.gameOverFlag ? 'visibility:visible' : 'visibility:hidden']"
+        :class="[gameSummary.gameOverFlag ? 'wrong' : 'right']"
+        >
+        Game Over
+        <button class = "button splash-button" onclick="game.reStartGame()">Restart</button>
         </div>
     </div>
 </body>
