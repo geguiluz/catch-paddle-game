@@ -81,16 +81,16 @@ class Game {
 
 	gameOver(){
 		this.gameOverFlag = true;
-		// TODO: Show splash screen on top of canvas
+		// Show splash screen on top of canvas
+		// this.gameOverSound.play();
 		gameVue.gameSummary.gameOverFlag = this.gameOverFlag;
-
 	}
 
 	pauseGame(){
 		this.pauseFlag = !this.pauseFlag;
 		// TODO: Show splash screen on top of canvas
 		
-		// TODO: Toggle flag in vue, so button text can change between
+		// Toggle flag in vue, so button text can change between
 		// pause/resume
 		gameVue.gameSummary.pauseFlag = this.pauseFlag;
 		gameVue.gameSummary.pauseButtonText = this.pauseFlag ? 'Resume' : 'Pause';
@@ -98,8 +98,7 @@ class Game {
 	}
 
 	reStartGame(){
-		// TODO: Either efresh page or navigate back to start screen (it could
-		// be a different HTML)
+		// Refresh page
 		gameVue.gameSummary.pauseFlag = this.pauseFlag;
 		window.location.reload()
 	}
@@ -138,6 +137,7 @@ class Game {
 				if (event === 'touched-ground') {
 					// If event === 'touched-ground', also decrease game.strikesLeft
 					this.decreaseStrikes();
+					// this.dropSound.play();
 				}
 				if (event === 'good-catch') {
 					// If event === 'good-catch', the game.catchCount by 1 (this is the
@@ -169,8 +169,6 @@ class Game {
 		this.strikesLeft --;
 		this.updateGameBars();
 		console.log('Strikes left =', this.strikesLeft);
-		
-		// TODO: Play bad catch sound
 	}
 
 	checkCaughtShapes(physics){
@@ -287,7 +285,7 @@ class FallingShape {
 		// so center the registration points for ZIM assets
 		
 		// Color randomizer
-		var colorArray = ['#e472c4', '#f58e25'];
+		var colorArray = ['#e472c4', '#f58e25', '#8B71DC', '#D77882'];
 
 		if (shapeType === 'circle'){
 			var asset = new Circle(this.size / 2, colorArray[Math.floor(Math.random() * colorArray.length)])
