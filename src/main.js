@@ -77,12 +77,15 @@ class Game {
 
 		// Audio
 		// this.catchSound = new Audio('./assets/audio/23646270_game-coin_by_loopbox_preview.mp3');
+		this.gameOverSound = new Audio('./assets/audio/Dying Robot-SoundBible.com-1721415199.mp3');
+		this.dropSound = new Audio('./assets/audio/Smashing-Yuri_Santana-1233262689.mp3');
+		
 	}
 
 	gameOver(){
 		this.gameOverFlag = true;
 		// Show splash screen on top of canvas
-		// this.gameOverSound.play();
+		this.gameOverSound.play();
 		gameVue.gameSummary.gameOverFlag = this.gameOverFlag;
 	}
 
@@ -137,7 +140,7 @@ class Game {
 				if (event === 'touched-ground') {
 					// If event === 'touched-ground', also decrease game.strikesLeft
 					this.decreaseStrikes();
-					// this.dropSound.play();
+					this.dropSound.play();
 				}
 				if (event === 'good-catch') {
 					// If event === 'good-catch', the game.catchCount by 1 (this is the
@@ -315,6 +318,8 @@ class FallingShape {
 // "full"	sets stage to window size with no scaling
 // "tagID"	add canvas to HTML tag of ID - set to dimensions if provided - no scaling
 
+// TODO: Try to change the scaling options to "tagID" for better responsiveness
+
 var scaling = "fit"; // this will resize to fit inside the screen dimensions
 var width = 1200;
 var height = 800;
@@ -356,19 +361,13 @@ frame.on("ready", function() {
 
 	physics.scale = 200;
 
-	// GAME DIFFICULTY factor
+	// Alternatively remove any of the borders also borderTop, borderLeft,
+	// borderRight physics.remove(physics.borderBottom); 
+	
+	//TODO: Try removing borderTop, so that strikes don't count when they
+	// collide with the top of the stage
 
-	// Alternatively remove any of the borders
-	// also borderTop, borderLeft, borderRight
-	// physics.remove(physics.borderBottom);
-
-	// INITIAL VARS
-	// here we specify width, height, radius
-	// so we can use both for Box2D shapes and ZIM shapes
-
-	var barW = 500;
-	var barH = 30;
-
+	
 	// DEBUG
 	// optionally see the BOX 2D debug canvas 
 	if (debug2D === true){
@@ -377,8 +376,14 @@ frame.on("ready", function() {
 			physics.updateDebug();
 		});
 	}
-
+	
 	// PADDLE BODY
+
+	// Width and heght of the paddle control
+	// TODO: Move this into the HandController class
+	var barW = 500;
+	var barH = 30;
+
 	// Box2D body assets specifying dynamic and other properties
 	var paddleBody = physics.makeRectangle({
 		width: barW,
@@ -451,7 +456,7 @@ frame.on("ready", function() {
 	// Set optional mouse dragging
 	// optionally pass in a list of bodies to receive mouse movement
 	// otherwise defaults to all moveable bodies
-	// physics.drag([boxBody, triangleBody]); // would not drag circleBody
+	// physics.drag([boxBody, triangleBody]); 
 	physics.drag();
 
 
@@ -466,18 +471,6 @@ frame.on("ready", function() {
 	// and rotates them to the same rotation
 	physics.addMap(paddleBody, bar);
 
-	// you can also remove maps and shapes:
-	// physics.removeMap(circleBody);
-	// physics.remove(circleBody);
-
-	// EXTRA
-	// you can also access the update function and add your own calls
-	// after defaults to true to add your function after the world step
-	// set after to false to add your function before the world step
-	// physics.Ticker.add(function, after);
-	// physics.Ticker.remove(function);
-	// this is required for forces and torque which get applied each step
-	// unless it is an impulse force which gets applied all at once
 
 	// LEAP MOTION HAND CONTROLLER
 
@@ -573,7 +566,8 @@ frame.on("ready", function() {
 			game.destroyShape(physics, fsDropped, 'touched-ground');
 		}
 		// TODO: Only remove shapes if their Y is close to the ground (this will
-		// help us ensuring shapes only get distructed when they hit the ground)
+		// help us ensuring shapes only get distructed when they hit the
+		// ground). Alternatively, we could remove the top of the stage
 
 
 	}
